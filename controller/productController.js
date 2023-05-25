@@ -48,9 +48,19 @@ export const updateProduct = async (req, res) => {
         res.status(500).json(error)
     }
 }
-export const getAllProducts = async (req, res) => {
+export const getProducts = async (req, res) => {
+    const skip = req.body.skip || 0
     try {
-        const products = await ProductModel.find(req.body)
+        let products = []
+        if (Object.keys(req.body).length !== 0) {
+            const { checked, radio } = req.body
+            products = await ProductModel.find({
+                categoryId: { $in: checked },
+                cost: { $gte: radio[0], $lte: radio[1] }
+            }).skip(skip).limit(process.env.LIMIT_LOAD_PRODUCTS)
+        } else {
+            products = await ProductModel.find().skip(skip).limit(process.env.LIMIT_LOAD_PRODUCTS)
+        }
         res.status(200).json(products)
     } catch (error) {
         console.log(error)
