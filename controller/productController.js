@@ -52,8 +52,8 @@ export const getProducts = async (req, res) => {
     const skip = req.body.skip || 0
     try {
         let products = []
-        if (Object.keys(req.body).length !== 0) {
-            const { checked, radio } = req.body
+        const { checked, radio } = req.body
+        if (checked?.length && radio?.length) {
             products = await ProductModel.find({
                 categoryId: { $in: checked },
                 cost: { $gte: radio[0], $lte: radio[1] }
